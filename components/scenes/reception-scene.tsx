@@ -14,10 +14,39 @@ export function ReceptionScene({ onComplete, isActive = true }: ReceptionScenePr
   const [showModal, setShowModal] = useState(false)
   const [attendanceConfirmed, setAttendanceConfirmed] = useState(false)
   const [showContinueButton, setShowContinueButton] = useState(false)
+  
+  // Video loading states
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [videoError, setVideoError] = useState(false)
+
+  // Video loading handlers
+  const handleVideoLoaded = () => {
+    console.log('Video loaded successfully in reception-scene')
+    setVideoLoaded(true)
+  }
+
+  const handleVideoError = () => {
+    console.log('Video failed to load in reception-scene')
+    setVideoError(true)
+    setVideoLoaded(true) // Show content anyway
+  }
 
   useEffect(() => {
-    setShowContent(true)
-    // Removed automatic timer - user controls when to advance
+    if (videoLoaded) {
+      setShowContent(true)
+    }
+  }, [videoLoaded])
+
+  // Safety timeout in case video events don't fire
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!videoLoaded) {
+        console.log('Video loading timeout in reception-scene, showing content anyway')
+        setVideoLoaded(true)
+      }
+    }, 5000) // 5 second timeout
+
+    return () => clearTimeout(timer)
   }, [])
 
   const handleOpenModal = () => {
@@ -52,9 +81,13 @@ export function ReceptionScene({ onComplete, isActive = true }: ReceptionScenePr
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 animate-fade-in"
+        onLoadedData={handleVideoLoaded}
+        onCanPlay={handleVideoLoaded}
+        onError={handleVideoError}
+        className="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
         style={{
-          filter: 'brightness(1.05) contrast(1.05)'
+          filter: 'brightness(1.05) contrast(1.05)',
+          opacity: videoLoaded ? 1 : 0
         }}
       >
         <source src="/video/kendra6.mp4" type="video/mp4" />
@@ -68,34 +101,46 @@ export function ReceptionScene({ onComplete, isActive = true }: ReceptionScenePr
 
       {/* No dark overlay - keep original video colors */}
       
+      {/* Loading indicator */}
+      {!videoLoaded && (
+        <div className="fixed inset-0 z-30 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="text-center">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            <p className="mt-4 text-pink-500 text-lg font-serif">Cargando experiencia...</p>
+          </div>
+        </div>
+      )}
+      
       {/* Main Content */}
-      <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-4 py-8 text-center">
-        {showContent && !showModal && (
-          <div className="space-y-8">
-            {/* Main CTA Button */}
-            <div className="animate-fade-in">
-              <button
-                onClick={handleOpenModal}
-                className="bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 text-white font-bold px-12 py-6 rounded-full text-xl md:text-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-pink-500/50"
-              >
-                💌 Confirmar Asistencia
-              </button>
-            </div>
-
-            {/* Continue Button (shows after confirmation or closing modal) */}
-            {showContinueButton && (
-              <div className="animate-fade-in mt-8">
+      {videoLoaded && (
+        <div className="relative z-20 flex flex-col items-center justify-center min-h-screen px-4 py-8 text-center">
+          {showContent && !showModal && (
+            <div className="space-y-8">
+              {/* Main CTA Button */}
+              <div className="animate-fade-in">
                 <button
-                  onClick={handleContinue}
-                  className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-8 py-4 rounded-full text-lg md:text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-yellow-400/50"
+                  onClick={handleOpenModal}
+                  className="bg-gradient-to-r from-pink-500 via-pink-600 to-pink-700 text-white font-bold px-12 py-6 rounded-full text-xl md:text-2xl shadow-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-pink-500/50"
                 >
-                  ✨ Continuar
+                  💌 Confirmar Asistencia
                 </button>
               </div>
-            )}
-          </div>
-        )}
-      </div>
+
+              {/* Continue Button (shows after confirmation or closing modal) */}
+              {showContinueButton && (
+                <div className="animate-fade-in mt-8">
+                  <button
+                    onClick={handleContinue}
+                    className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600 text-black font-bold px-8 py-4 rounded-full text-lg md:text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 hover:shadow-yellow-400/50"
+                  >
+                    ✨ Continuar
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Modal */}
       {showModal && (

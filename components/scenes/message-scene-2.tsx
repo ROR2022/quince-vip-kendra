@@ -15,12 +15,38 @@ export function MessageScene2({ onComplete, isActive }: MessageScene2Props) {
   const [thirdTextComplete, setThirdTextComplete] = useState(false)
   const [fourthTextComplete, setFourthTextComplete] = useState(false)
   const [fifthTextComplete, setFifthTextComplete] = useState(false)
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [videoError, setVideoError] = useState(false)
 
   const firstMessage = "Mi Mamá"
   const secondMessage = "Judith Guzmán Avila"
   const thirdMessage = "Mis Padrinos"
   const fourthMessage = "Antonio López Gallardo"
   const fifthMessage = "Alma Rosa Guzmán Avila"
+
+  // Handle video loading
+  const handleVideoLoaded = () => {
+    console.log('MessageScene2 - Video loaded successfully')
+    setVideoLoaded(true)
+  }
+
+  const handleVideoError = () => {
+    console.log('MessageScene2 - Video failed to load, using fallback')
+    setVideoError(true)
+    setVideoLoaded(true) // Proceed with fallback image
+  }
+
+  // Fallback timeout - if video doesn't load in 5 seconds, proceed anyway
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (!videoLoaded) {
+        console.log('MessageScene2 - Video loading timeout, proceeding with fallback')
+        setVideoLoaded(true)
+      }
+    }, 5000) // 5 second timeout
+
+    return () => clearTimeout(fallbackTimer)
+  }, [videoLoaded])
 
   // Handle 2 second delay before advancing to next scene
   useEffect(() => {
@@ -63,8 +89,13 @@ export function MessageScene2({ onComplete, isActive }: MessageScene2Props) {
         loop
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0"
+        onLoadedData={handleVideoLoaded}
+        onCanPlay={handleVideoLoaded}
+        onError={handleVideoError}
         style={{
-          filter: 'brightness(1.05) contrast(1.05)'
+          filter: 'brightness(1.05) contrast(1.05)',
+          opacity: videoLoaded && !videoError ? 1 : 0,
+          transition: 'opacity 0.5s ease-in-out'
         }}
       >
         <source src="/video/kendra3.mp4" type="video/mp4" />
@@ -73,76 +104,92 @@ export function MessageScene2({ onComplete, isActive }: MessageScene2Props) {
           src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/fotoVideo3-fU4fQLXpKVDGkvxylef7pszW6qJCT8.png"
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            opacity: videoError ? 1 : 0,
+            transition: 'opacity 0.5s ease-in-out'
+          }}
         />
       </video>
 
       {/* No dark overlay - keep original video colors */}
 
-      {/* Text Container - Organized vertically */}
-      <div className="relative z-20 text-center px-6 md:px-8 lg:px-12 space-y-8">
-        {/* First Text: "Mi Mamá" */}
-        <div className="rounded-2xl p-4 md:p-6 lg:p-8">
-          <TypewriterText
-            text={firstMessage}
-            delay={150}
-            className="font-main-text text-5xl md:text-7xl lg:text-8xl text-amber-500 font-bold tracking-wide drop-shadow-2xl"
-            onComplete={handleFirstTextComplete}
-            isActive={isActive}
-          />
-        </div>
-
-        {/* Second Text: "Judith Guzmán Avila" - appears after first text completes */}
-        {firstTextComplete && (
-          <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
-            <TypewriterText
-              text={secondMessage}
-              delay={120}
-              className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
-              onComplete={handleSecondTextComplete}
-              isActive={isActive}
-            />
+      {/* Loading Indicator */}
+      {!videoLoaded && (
+        <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/30">
+          <div className="text-center space-y-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-4 border-amber-500 border-t-transparent mx-auto"></div>
+            <p className="text-white text-lg font-semibold">Cargando experiencia...</p>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Third Text: "Mis Padrinos" - appears after second text completes */}
-        {secondTextComplete && (
-          <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
+      {/* Text Container - Organized vertically */}
+      {videoLoaded && (
+        <div className="relative z-20 text-center px-6 md:px-8 lg:px-12 space-y-8">
+          {/* First Text: "Mi Mamá" */}
+          <div className="rounded-2xl p-4 md:p-6 lg:p-8">
             <TypewriterText
-              text={thirdMessage}
+              text={firstMessage}
               delay={150}
               className="font-main-text text-5xl md:text-7xl lg:text-8xl text-amber-500 font-bold tracking-wide drop-shadow-2xl"
-              onComplete={handleThirdTextComplete}
+              onComplete={handleFirstTextComplete}
               isActive={isActive}
             />
           </div>
-        )}
 
-        {/* Fourth Text: "Antonio López Gallardo" - appears after third text completes */}
-        {thirdTextComplete && (
-          <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
-            <TypewriterText
-              text={fourthMessage}
-              delay={120}
-              className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
-              onComplete={handleFourthTextComplete}
-              isActive={isActive}
-            />
-          </div>
-        )}
+          {/* Second Text: "Judith Guzmán Avila" - appears after first text completes */}
+          {firstTextComplete && (
+            <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
+              <TypewriterText
+                text={secondMessage}
+                delay={120}
+                className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
+                onComplete={handleSecondTextComplete}
+                isActive={isActive}
+              />
+            </div>
+          )}
 
-        {/* Fifth Text: "Alma Rosa Guzmán Avila" - appears after fourth text completes */}
-        {fourthTextComplete && (
-          <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
-            <TypewriterText
-              text={fifthMessage}
-              delay={120}
-              className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
-              onComplete={handleFifthTextComplete}
-              isActive={isActive}
-            />
-          </div>
-        )}
-      </div>
+          {/* Third Text: "Mis Padrinos" - appears after second text completes */}
+          {secondTextComplete && (
+            <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
+              <TypewriterText
+                text={thirdMessage}
+                delay={150}
+                className="font-main-text text-5xl md:text-7xl lg:text-8xl text-amber-500 font-bold tracking-wide drop-shadow-2xl"
+                onComplete={handleThirdTextComplete}
+                isActive={isActive}
+              />
+            </div>
+          )}
+
+          {/* Fourth Text: "Antonio López Gallardo" - appears after third text completes */}
+          {thirdTextComplete && (
+            <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
+              <TypewriterText
+                text={fourthMessage}
+                delay={120}
+                className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
+                onComplete={handleFourthTextComplete}
+                isActive={isActive}
+              />
+            </div>
+          )}
+
+          {/* Fifth Text: "Alma Rosa Guzmán Avila" - appears after fourth text completes */}
+          {fourthTextComplete && (
+            <div className="animate-fade-in rounded-2xl p-4 md:p-6 lg:p-8">
+              <TypewriterText
+                text={fifthMessage}
+                delay={120}
+                className="font-main-text text-4xl md:text-6xl lg:text-7xl text-pink-600 font-bold tracking-wide drop-shadow-2xl"
+                onComplete={handleFifthTextComplete}
+                isActive={isActive}
+              />
+            </div>
+          )}
+        </div>
+      )}
 
     </div>
   )
