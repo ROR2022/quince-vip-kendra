@@ -36,13 +36,13 @@ export const quinceMainData = {
       godmother: "Ma. Asunción Jiménez",
     },
     date: {
-      full: "Sábado 27 de Diciembre 2025",
-      isoDate: "2025-12-27T13:00:00",
+      full: "Sábado 15 de Noviembre 2025",
+      isoDate: "2025-11-15T13:00:00",
       day: "Sábado",
-      dayNumber: "27",
-      month: "Diciembre",
+      dayNumber: "15",
+      month: "Noviembre",
       year: "2025",
-      date: "27 de Diciembre 2025",
+      date: "15 de Noviembre 2025",
       mensaje1: "¡La cuenta regresiva ha comenzado!",
       mensaje2: "TAN SOLO FALTAN",
       backgroundCarrouselImages: [
