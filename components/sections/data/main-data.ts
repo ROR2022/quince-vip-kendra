@@ -1,6 +1,6 @@
 export const quinceMainData = {
   hero: {
-    name: "Roxana Leonor",
+    name: "Kendra",
     subtitle: "¡Mis XV años!",
     backgroundImage: "/images/quince3.jpeg",
     quote:
@@ -18,7 +18,7 @@ export const quinceMainData = {
     backgroundImage: "/images/aurora_1.jpeg",
   },
   event: {
-    celebrant: "Roxana Leonor",
+    celebrant: "Kendra",
     //Padres María de Jesús Gutiérrez y Andres Ramírez
     parents: {
       father: "Andres Martínez",
@@ -216,14 +216,14 @@ export const quinceMainData = {
       {
         id: "image1",
         src: "/images/rapunzel1.jpeg",
-        alt: "Roxana Leonor en sus XV años",
-        caption: "Roxana Leonor radiante en su día especial.",
+        alt: "Kendra en sus XV años",
+        caption: "Kendra radiante en su día especial.",
       },
       {
         id: "image2",
         src: "/images/rapunzel2.jpeg",
         alt: "Baile de Quinceañera",
-        caption: "El emotivo primer baile de Roxana Leonor.",
+        caption: "El emotivo primer baile de Kendra.",
       },
       {
         id: "image3",
@@ -235,7 +235,7 @@ export const quinceMainData = {
         id: "image4",
         src: "/images/rapunzel4.jpeg",
         alt: "Celebración con Familia y Amigos",
-        caption: "Roxana Leonor rodeada de sus seres queridos.",
+        caption: "Kendra rodeada de sus seres queridos.",
       },
       {
         id: "image5",
@@ -258,7 +258,7 @@ export const quinceMainData = {
       {
         id: "image8",
         src: "/images/rapunzel8.jpg",
-        alt: "Roxana Leonor y sus Padres",
+        alt: "Kendra y sus Padres",
         caption: "Un momento especial con sus queridos padres.",
       },
     ],
@@ -275,7 +275,7 @@ export const quinceMainData = {
   },
   qrcodeSection:{
     title: "Escanea el Código QR",
-    celebrant: "Roxana Leonor",
+    celebrant: "Kendra",
     message: "Para acceder fácilmente a la invitación en tu dispositivo móvil.",
     mainImage: "/images/qrcode-bg.jpg",
   },
