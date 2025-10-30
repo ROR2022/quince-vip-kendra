@@ -123,7 +123,7 @@ export function MessageScene1({ onComplete, isActive }: MessageScene1Props) {
       )}
 
       {/* Message Text */}
-      {videoLoaded && (
+      {videoLoaded && hasStarted && (
         <div className="relative z-20 max-w-4xl mx-auto px-6 md:px-8 lg:px-12">
           <div className="rounded-2xl p-8 md:p-12 lg:p-16">
             <TypewriterText
@@ -131,7 +131,7 @@ export function MessageScene1({ onComplete, isActive }: MessageScene1Props) {
               delay={80}
               className="font-main-text text-xl md:text-2xl lg:text-3xl text-rose-400 text-center leading-relaxed drop-shadow-lg"
               onComplete={handleTextComplete}
-              isActive={isActive && hasStarted}
+              isActive={true}
             />
           </div>
         </div>
