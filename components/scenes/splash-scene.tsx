@@ -1,15 +1,57 @@
 "use client"
 
 import { Sparkles } from "@/components/sparkles"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams } from "next/navigation"
+
 
 interface SplashSceneProps {
   onStart: () => void
 }
 
-export function SplashScene({ onStart }: SplashSceneProps) {
+function SplashSceneContent({ onStart }: SplashSceneProps) {
   const [videoLoaded, setVideoLoaded] = useState(false)
   const [videoError, setVideoError] = useState(false)
+  const [dataInvitation, setDataInvitation] = useState<any>(null)
+  const searchParams = useSearchParams()
+  const guestParam = searchParams.get('guest') || ''
+
+  useEffect(() => {
+    if (guestParam && guestParam.trim() !== '') {
+      //console.log(`Guest parameter detected: ${guestParam}`)
+      // Fetch data based on guest parameter
+      fetchDataForGuest(guestParam)
+    }
+  }, [guestParam]);
+
+  const fetchDataForGuest = async (guest: string) => {
+    try {
+      const response = await fetch(`/api/guests/${guest}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      //console.log('Fetched guest data:', data);
+      const guestName = data.data.name;
+      const personalInvitation = data.data.personalInvitation;
+      const numberOfGuests = personalInvitation.numberOfGuests;
+      const specialMessage = personalInvitation.message;
+      console.log(`Guest Name: ${guestName}`);
+      //console.log(`Personal Invitation:`, personalInvitation);
+      console.log(`Number of Guests Allowed: ${numberOfGuests}`);
+      console.log(`Special Message: ${specialMessage}`);
+      if (guestName) {
+        setDataInvitation({
+          guestName,
+          numberOfGuests,
+          specialMessage
+        });
+      }
+      // You can use this data to customize the experience further
+    } catch (error) {
+      console.error('Error fetching guest data:', error);
+    }
+  };
 
   // Handle video loading
   const handleVideoLoaded = () => {
@@ -90,6 +132,26 @@ export function SplashScene({ onStart }: SplashSceneProps) {
           <div className="relative">
             {/* Background blur effect for the message */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm rounded-full -m-4"></div>
+            <div>
+              {dataInvitation && (
+                <div>
+                  <p className="relative text-2xl md:text-3xl text-white font-medium drop-shadow-lg">
+                    Bienvenid@, {dataInvitation.guestName}!
+                  </p>
+                  {dataInvitation.specialMessage && (
+                    <p className="relative mt-2 text-lg md:text-xl text-white font-light italic drop-shadow-lg">
+                      "{dataInvitation.specialMessage}"
+                    </p>
+                  )}
+                  {dataInvitation.numberOfGuests && (<div className="relative mt-2">
+                    <p className="relative text-lg md:text-xl text-white font-bold drop-shadow-lg">
+                      Pase para: {dataInvitation.numberOfGuests} invitado{dataInvitation.numberOfGuests > 1 ? 's' : ''}.
+                    </p>
+                  </div>
+                  )}
+                </div>
+              )}
+            </div>
             <p className="relative text-2xl md:text-3xl text-white font-medium animate-pulse drop-shadow-lg">
               ✨ Toca para comenzar ✨
             </p>
@@ -101,3 +163,21 @@ export function SplashScene({ onStart }: SplashSceneProps) {
     </div>
   )
 }
+
+function SplashSceneWrapper(props: SplashSceneProps) {
+  return (
+    <Suspense fallback={
+      <div className="relative w-full h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#f5d5d8] via-[#e8c4c8] to-[#d4a5a8]">
+        <div className="text-center space-y-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-pink-500 border-t-transparent mx-auto"></div>
+          <p className="text-white text-lg font-semibold">Cargando experiencia...</p>
+        </div>
+      </div>
+    }>
+      <SplashSceneContent {...props} />
+    </Suspense>
+  )
+}
+
+export { SplashSceneWrapper as SplashScene }
+
